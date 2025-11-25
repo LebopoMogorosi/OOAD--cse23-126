@@ -1,4 +1,4 @@
-package bank;
+package bank.model;
 /**
  * 
  * 
@@ -14,7 +14,7 @@ public class InvestmentAccount extends Account {
             balance -= amount;
             transcastions.add(new Transaction("Withdraw", amount, balance));
         } else{
-            System.out.println("Insufficient funds, cannot transact Investment Account.")
+            System.out.println("Insufficient funds, cannot transact Investment Account.");
         }
     }
     @Override

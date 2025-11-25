@@ -1,4 +1,4 @@
-package bank;
+package bank.model;
 /**
  * 
  */
@@ -6,7 +6,7 @@ public class ChequeAccount extends Account {
 
     private String employer;
 
-    public ChequeAccountt(String accountNumber, String branch, double openingBalance, String employer) {
+    public ChequeAccount(String accountNumber, String branch, double openingBalance, String employer) {
         super(accountNumber, branch, openingBalance);
         this.employer = employer;
     }

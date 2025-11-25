@@ -1,11 +1,11 @@
-package bank;
-/**
- * 
- * 
- */
+package bank.model;
+
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Customer
+ */
 public class Customer {
     private String customerId;
     private String firstName;
@@ -21,34 +21,30 @@ public class Customer {
         this.address = address;
     }
 
-    //Encapsulation
     public String getCustomerId() { return customerId; }
     public String getFirstName() { return firstName; }
     public String getLastName() { return lastName; }
     public String getAddress() { return address; }
 
-    /**Adding an account to this customer */
-    public void addAccount(Account account) {
-        accounts.add(account);
-    }
+    public void addAccount(Account a) { accounts.add(a); }
+    public List<Account> getAccounts() { return accounts; }
 
-    /**Retrieval of all accounts */
-    public List<Account> getAccounts() { return accounts, }
-
-    /**Finding account by acccount number */
     public Account findAccount(String accNo) {
-        for (Account a : accounts)
-         if (a.getAccountNumber().equals(accNo)) return a;
+        for (Account a : accounts) if (a.getAccountNumber().equals(accNo)) return a;
         return null;
     }
 
-    /**Linking a Bank Card (for the GUI/Database use) */
-    public void addBankCard(BankCard card) {
-        bankCards.add(card);
+    // Bank card management
+    public void addBankCard(BankCard card) { bankCards.add(card); }
+    public List<BankCard> getBankCards() { return bankCards; }
+    public BankCard findCard(String cardNumber) {
+        for (BankCard c : bankCards) 
+            if (c.getCardNumber().equals(cardNumber)) return c;
+        return null;
     }
 
     @Override
     public String toString() {
-        return "Customer: " + firstName + " " + lastName + " (" + customerId + ")";
+        return firstName + " " + lastName + " (" + customerId + ")";
     }
 }
