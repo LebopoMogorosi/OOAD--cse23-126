@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run GUIApp",
+            "type": "shell",
+            "command": "java",
+            "args": [
+                "--module-path", "C:/Users/Mogorosi/OneDrive/Documents/BankingSystem/javafx-sdk-24.0.1/lib",
+                "--add-modules", "javafx.controls,javafx.fxml",
+                "-cp", "${workspaceFolder}/bin",
+                "bank.gui.GUIApp"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
