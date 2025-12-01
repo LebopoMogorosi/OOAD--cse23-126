@@ -1,26 +1,34 @@
-package bank.model;
-/**
- * 
- * 
- */
-public class InvestmentAccount extends Account {
-    public InvestmentAccount(String accountNumber, String branch, double openingBalance) {
-        super(accountNumber, branch, Math.max(openingBalance, 500.00));
-    }
-    @Override
-    public void withdraw(double amount) {
-        if (amount <= 0) return;
-        if (amount <= balance) {
-            balance -= amount;
-            transcastions.add(new Transaction("Withdraw", amount, balance));
-        } else{
-            System.out.println("Insufficient funds, cannot transact Investment Account.");
+package model;
+
+public class InvestmentAccount extends Account
+        implements InterestBearing, Withdrawal {
+
+    private static final double INTEREST_RATE = 0.05;
+    private static final double MIN_INITIAL = 500.0;
+
+    public InvestmentAccount(long customerId, String accountNumber,
+                             double balance, String branch) {
+        super(customerId, accountNumber, "INVESTMENT", balance, branch);
+        if (balance < MIN_INITIAL) {
+            throw new IllegalArgumentException("Minimum deposit for investment account is 500.00");
         }
     }
+
     @Override
     public void applyInterest() {
-        double interest = balance * 0.05; //interest charged at 5% monthly for Investments
+        double interest = balance * INTEREST_RATE;
         balance += interest;
-        transcastions.add(new Transaction("Interest", interest, balance));
+    }
+
+    @Override
+    public boolean withdraw(double amount) throws InsufficientFundsException {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Withdrawal must be positive");
+        }
+        if (amount > balance) {
+            throw new InsufficientFundsException("Insufficient funds in Investment Account.");
+        }
+        balance -= amount;
+        return true;
     }
 }

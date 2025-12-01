@@ -1,27 +1,24 @@
-package bank.model;
-/**
- * 
- */
-public class ChequeAccount extends Account {
+package model;
 
-    private String employer;
 
-    public ChequeAccount(String accountNumber, String branch, double openingBalance, String employer) {
-        super(accountNumber, branch, openingBalance);
-        this.employer = employer;
+public class ChequeAccount extends Account implements Withdrawal {
+
+    private static final String ACCOUNT_TYPE = "CHEQUE";
+
+    public ChequeAccount(long customerId, String accountNumber,
+                         double balance, String branch) {
+        super(customerId, accountNumber, ACCOUNT_TYPE, balance, branch);
     }
 
-    public String getEmployer() { return employer;}
-    public void setEmployer(String employer) { this.employer = employer; }
-
     @Override
-     public void withdraw(double amount) {
-        if (amount <= 0) return;
-        if (amount <= balance) {
-            balance -= amount;
-            transcastions.add(new Transaction("Withdraw", amount, balance));
-        } else{
-            System.out.println("Insufficient funds in the Cheque Account.");
+    public boolean withdraw(double amount) throws InsufficientFundsException {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Withdrawal amount must be positive.");
         }
+        if (amount > balance) {
+            throw new InsufficientFundsException("Insufficient funds in Cheque Account.");
+        }
+        balance -= amount; // directly update inherited protected field
+        return true;
     }
 }

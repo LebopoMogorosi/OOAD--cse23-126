@@ -1,27 +1,28 @@
-package bank.model;
+package model;
 
-/**
- * 
- * 
- */
-public class SavingsAccount extends Account {
+public class SavingsAccount extends Account implements InterestBearing, Withdrawal {
 
-    public SavingsAccount(String accountNumber, String branch, double openingBalance) {
-        super(accountNumber, branch, openingBalance);
+    private static final double INTEREST_RATE = 0.03;
+
+    public SavingsAccount(long customerId, String accountNumber, double balance, String branch) {
+        super(customerId, accountNumber, "SAVINGS", balance, branch);
     }
 
-    @Override
-    public void withdraw(double amount) {
-        
-        //withdrawals are not allowed in this account
-
-        System.out.println("Withdrawals are restricted on Savings Account.");
-    }
-    
     @Override
     public void applyInterest() {
-        double interest = balance * 0.0005; //interest charged at 0.05% monthly for Savings
+        double interest = balance * INTEREST_RATE;
         balance += interest;
-        transcastions.add(new Transaction("Interest", interest, balance));
+    }
+
+    @Override
+    public boolean withdraw(double amount) throws InsufficientFundsException {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Withdrawal must be positive.");
+        }
+        if (amount > balance) {
+            throw new InsufficientFundsException("Insufficient balance in Savings Account.");
+        }
+        balance -= amount;
+        return true;
     }
 }

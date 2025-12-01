@@ -1,38 +1,90 @@
-package bank.controller;
+package controller;
 
-import bank.model.Customer;
-import bank.utils.CustomerRepository;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import dao.CustomerDAO;
+import model.Customer;
+import util.AlertUtil;
+import java.io.IOException;
 
-/**
- * LoginController
- * ----------------
- * Authenticates a user and stores the current logged-in customer.
- * In this demo, username only is checked (no password rules yet).
- */
 public class LoginController {
 
-    private Customer currentCustomer;
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
 
-    /**
-     * Authenticate user.
-     * For now:
-     *  - Uses in-memory CustomerRepository
-     *  - Accepts any non-empty password
-     */
-    public boolean authenticate(String username, String password) {
-        if (username == null || username.isBlank())
-            return false;
+    @FXML
+    private void handleLogin(ActionEvent event) {
+        String username = usernameField.getText().trim();
+        String password = passwordField.getText().trim();
 
-        Customer c = CustomerRepository.findByUsername(username);
-        if (c != null) {
-            currentCustomer = c;
-            return true;
+        try {
+            // Default admin shortcut (bypass DB)
+            if (username.equals("admin") && password.equals("admin123")) {
+                loadView(event, "/views/StaffDashboard.fxml", "Staff Dashboard", null);
+                return;
+            }
+
+            // Default customer shortcut (bypass DB)
+            if (username.equals("kachi") && password.equals("kachi")) {
+                Customer defaultCustomer = new Customer(1L, "Kachi Customer", "kachi", "", "kachi@bank.com", true);
+                loadView(event, "/views/CustomerDashboard.fxml", "Customer Dashboard", defaultCustomer);
+                return;
+            }
+
+            // Customer login from DB
+            Customer user = CustomerDAO.login(username, password);
+            if (user == null) {
+                AlertUtil.error("Invalid credentials!");
+                return;
+            }
+
+            if (!user.isApproved()) {
+                AlertUtil.info("Account pending staff approval.");
+                return;
+            }
+
+            // Redirect based on role
+            loadView(event, "/views/CustomerDashboard.fxml", "Customer Dashboard", user);
+
+        } catch (Exception e) {
+            AlertUtil.error("Login error: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        return false;
     }
 
-    public Customer getCurrentCustomer() {
-        return currentCustomer;
+    @FXML
+    private void handleRegister(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/views/RegisterView.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Register - Banking System");
+            stage.show();
+        } catch (IOException e) {
+            AlertUtil.error("Failed to load RegisterView.fxml: " + e.getMessage());
+        }
+    }
+
+    private void loadView(ActionEvent event, String fxmlPath, String title, Customer user) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load();
+
+        // Pass logged-in user to CustomerDashboard
+        if (user != null && fxmlPath.contains("CustomerDashboard.fxml")) {
+            CustomerDashboardController controller = loader.getController();
+            controller.setCustomer(user);
+        }
+
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle(title);
+        stage.show();
     }
 }

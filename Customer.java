@@ -1,50 +1,54 @@
-package bank.model;
+package model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Customer
- */
 public class Customer {
-    private String customerId;
-    private String firstName;
-    private String lastName;
-    private String address;
-    private List<Account> accounts = new ArrayList<>();
-    private List<BankCard> bankCards = new ArrayList<>();
+    private long id;
+    private String fullName;
+    private String username;
+    private String passwordHash;
+    private String email;
+    private boolean approved;
 
-    public Customer(String customerId, String firstName, String lastName, String address) {
-        this.customerId = customerId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.address = address;
+    // Default constructor
+    public Customer() {}
+
+    // Constructor for quick creation (e.g., during registration)
+    public Customer(String fullName, String username, String passwordHash, String email) {
+        this.fullName = fullName;
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.email = email;
+        this.approved = false; // default until staff approval
     }
 
-    public String getCustomerId() { return customerId; }
-    public String getFirstName() { return firstName; }
-    public String getLastName() { return lastName; }
-    public String getAddress() { return address; }
-
-    public void addAccount(Account a) { accounts.add(a); }
-    public List<Account> getAccounts() { return accounts; }
-
-    public Account findAccount(String accNo) {
-        for (Account a : accounts) if (a.getAccountNumber().equals(accNo)) return a;
-        return null;
+    // Constructor for fetching from DB
+    public Customer(long id, String fullName, String username, String passwordHash, String email, boolean approved) {
+        this.id = id;
+        this.fullName = fullName;
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.email = email;
+        this.approved = approved;
     }
 
-    // Bank card management
-    public void addBankCard(BankCard card) { bankCards.add(card); }
-    public List<BankCard> getBankCards() { return bankCards; }
-    public BankCard findCard(String cardNumber) {
-        for (BankCard c : bankCards) 
-            if (c.getCardNumber().equals(cardNumber)) return c;
-        return null;
-    }
+    // Getters
+    public long getId() { return id; }
+    public String getFullName() { return fullName; }
+    public String getUsername() { return username; }
+    public String getPasswordHash() { return passwordHash; }
+    public String getEmail() { return email; }
+    public boolean isApproved() { return approved; }
+
+    // Setters
+    public void setId(long id) { this.id = id; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+    public void setUsername(String username) { this.username = username; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public void setEmail(String email) { this.email = email; }
+    public void setApproved(boolean approved) { this.approved = approved; }
 
     @Override
     public String toString() {
-        return firstName + " " + lastName + " (" + customerId + ")";
+        return String.format("Customer[id=%d, name=%s, username=%s, approved=%s]",
+                id, fullName, username, approved ? "Yes" : "No");
     }
 }
